@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Deploy Git
+Exec=gnome-terminal -e "bash generate-deploy-git.sh"
+Icon=/home/golynxone/bash_icons/git.png
+Name[en_ZA]=Deploy Git
