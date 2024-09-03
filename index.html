@@ -1,9 +1,402 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>DroidLynx</title>
+	<meta charset="UTF-8">
+	<meta
+		name="viewport"
+		content="width=device-width, initial-scale=1.0"
+	>
+	<title>Incident Timeline</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+	<link
+		href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"
+		rel="stylesheet"
+		type="text/css"
+	/>
+	<style>
+		#timeline {
+			width: 100%;
+			height: 600px;
+		}
+
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgba(0, 0, 0, 0.4);
+		}
+
+		.modal-content {
+			background-color: #fefefe;
+			margin: 15% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 600px;
+		}
+
+		.close {
+			color: #aaa;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
+	</style>
 </head>
 <body>
-	<h1>Home Page 2</h1>
+	<div id="timeline"></div>
+
+	<div
+		id="itemModal"
+		class="modal"
+	>
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<h2 id="modalTitle"></h2>
+			<div id="modalContent"></div>
+		</div>
+	</div>
+
+	<script>
+		// Incidents data will be added here
+		const incidents = [
+			{
+				date: "2024-08-22",
+				type: "Text",
+				time: "8:43 PM",
+				description: "Text me",
+				phoneNumberContacted: "(785) 249-7724",
+				stalkersPhoneNumber: "(316) 640-4448",
+				feeling: "Fear",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "Yes, send for approval",
+				investigatorsEmail: "queifmcqueen@gmail.com"
+			},
+			{
+				date: "2024-08-22",
+				type: "In Person Contact",
+				time: "8:40 PM",
+				description: "Drove by",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "Yes, send for approval",
+				investigatorsEmail: "thiggiefrado@gmail.com"
+			},
+			{
+				date: "2019-03-22",
+				type: "Postal Mail",
+				time: "7:34 PM",
+				description: "Sent me card",
+				address: "2000 SE ECHORIDGE CIR, apt 36, 36 Topeka, KS, 66607-1981",
+				threatOfHarm: "No",
+				reportedToPolice: "No"
+			},
+			{
+				date: "2019-06-23",
+				type: "Other",
+				time: "7:33 PM",
+				description: "Made fake dating profile ",
+				threatOfHarm: "No",
+				reportedToPolice: "No"
+			},
+			{
+				date: "2019-08-27",
+				type: "Hacking",
+				time: "7:31 PM",
+				description: "Hacked google searching for characteristics of a truly bad mother",
+				threatOfHarm: "No",
+				reportedToPolice: "No"
+			},
+			{
+				date: "2018-05-16",
+				type: "Email",
+				time: "9:41 PM",
+				description: "Email me about watching me",
+				emailSentTo: "mymajixlashes@gmail.com",
+				stalkersEmailSentFrom: "ravenouskain@yahoo.com",
+				threatOfHarm: "Yes",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2018-08-22",
+				type: "Social Media",
+				time: "7:28 PM",
+				description: "Messaging me on fb messenger ",
+				threatOfHarm: "Yes",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2024-08-22",
+				type: "Email",
+				time: "7:24 PM",
+				description: "Emal.me with threat",
+				emailSentTo: "Majicalgiz@gmail.com",
+				threatOfHarm: "Yes",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2017-08-22",
+				type: "Postal Mail",
+				time: "7:22 PM",
+				description: "Sent a letter to me",
+				address: "2000 SE ECHORIDGE CIR, apt 36, 36 Topeka, Ks, 66607-1981",
+				threatOfHarm: "No",
+				reportedToPolice: "Yes",
+				nameOfOfficer: "Melissa  Howell ",
+				whatWasDone: "Report made",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-11-29",
+				type: "Email",
+				time: "11:20 PM",
+				description: "Email apologizing",
+				emailSentTo: "loisjoanne@gmail.com",
+				stalkersEmailSentFrom: "onewingedangel1212@gmail.com",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-12-22",
+				type: "Email",
+				time: "7:19 PM",
+				description: "Email asking to call",
+				emailSentTo: "Majicalgiz@gmail.com",
+				stalkersEmailSentFrom: "onewingedangel1212@gmail.com",
+				threatOfHarm: "Yes",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-12-12",
+				type: "Email",
+				time: "5:18 PM",
+				description: "Email mee",
+				emailSentTo: "xmxnxn@gmail.com",
+				stalkersEmailSentFrom: "onewingedangel1212@gmai.com",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-11-25",
+				type: "Email",
+				time: "5:13 PM",
+				description: "Email me again ",
+				emailSentTo: "loisjoanne@gmail.com",
+				stalkersEmailSentFrom: "onewingedangel1212@gmail.com",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-11-29",
+				type: "Email",
+				time: "8:15 AM",
+				description: "Another email bec i wint respons",
+				emailSentTo: "loisjoanne@gmail.com",
+				stalkersEmailSentFrom: "onewingedangel1212@gmai.com",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-11-28",
+				type: "Email",
+				time: "12:05 PM",
+				description: "Email me again",
+				emailSentTo: "loisjoanne@gmail.com",
+				stalkersEmailSentFrom: "onewingedangel1212@gmail.com",
+				threatOfHarm: "No",
+				reportedToPolice: "Yes",
+				nameOfOfficer: "Edward  Mora",
+				whatWasDone: "Said nothing an be done. ",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-11-30",
+				type: "Hacking",
+				time: "4:18 PM",
+				description: "Hacked my fb",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-12-02",
+				type: "3rd Party Contact",
+				time: "7:08 PM",
+				description: "Contacted her om fb messenger ",
+				thirdPartyName: "Regan Mcgee",
+				thirdPartyPhoneNumber: "(316) 5249987",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-11-28",
+				type: "Social Media",
+				time: "12:33 PM",
+				description: "Messaged me on fb messenger ",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-11-25",
+				type: "Text",
+				time: "1:09 PM",
+				description: "Text me because he knew I qasnt where I said I was",
+				phoneNumberContacted: "(785) 2497724",
+				stalkersPhoneNumber: "(913) 2403031",
+				threatOfHarm: "No",
+				reportedToPolice: "No",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2016-11-26",
+				type: "Call",
+				time: "1:09 AM",
+				description: "Jesse kept calling me and when I did not answer.He drove 2.5 hours down to Derby.Kansas at 1 AM and begin ringing.The doorbell 20 times until I called 91.1 at 1:32 AM.I sent him a message.Kirk police to not contact me any further.",
+				phoneNumberContacted: "(785) 2497724",
+				stalkersPhoneNumber: "(316) 6404448",
+				threatOfHarm: "No",
+				reportedToPolice: "Yes",
+				nameOfOfficer: "Derrick Slaton ",
+				whatWasDone: "Report taken",
+				sendForApproval: "No, do not send"
+			},
+			{
+				date: "2017-11-12",
+				type: "Other",
+				time: "6:45 PM",
+				description: "Police came to help me get away from the house because Jesse took my car keys with him so I could not leave.The police brought me to a hotel.",
+				threatOfHarm: "No",
+				reportedToPolice: "Yes",
+				nameOfOfficer: "Kirk Brown",
+				whatWasDone: "Reprt made",
+				sendForApproval: "No, do not send",
+				witnessName: "Kirk Brown",
+				witnessPhoneNumber: "(316) 7881557",
+				witnessEmail: "kirkbrown@derbyweb.com",
+				witnessAddress: "Derby, Ks, 67037"
+			},
+			{
+				date: "2024-08-22",
+				type: "Email",
+				time: "5:35 PM",
+				description: "Sent me another email ",
+				emailSentTo: "Majicalgiz@gmail.com",
+				stalkersEmailSentFrom: "stalkeremaul@gmail.com",
+				threatOfHarm: "Yes",
+				reportedToPolice: "No",
+				sendForApproval: "Yes, send for approval",
+				investigatorsEmail: "thefight4light@gmail.com"
+			}
+		];
+
+		// Create dataset for vis.js
+		const items = new vis.DataSet(
+			incidents.map((item, index) => ({
+				id: index,
+				content: item.description,
+				start: item.date
+			}))
+		);
+
+		// Configuration for the Timeline
+		const options = {
+			width: "100%",
+			height: "100%",
+			margin: {
+				item: 20
+			}
+		};
+
+		// Create a Timeline
+		const container = document.getElementById("timeline");
+		const timeline = new vis.Timeline(container, items, options);
+
+		// Modal functionality
+		const modal = document.getElementById("itemModal");
+		const closeBtn = document.getElementsByClassName("close")[0];
+
+		closeBtn.onclick = function () {
+			modal.style.display = "none";
+		};
+
+		window.onclick = function (event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		};
+
+		// Timeline item click event
+		timeline.on("select", function (properties) {
+			if (properties.items.length > 0) {
+				const selectedId = properties.items[0];
+				const selectedItem = incidents[selectedId];
+
+				if (selectedItem) {
+					const modalTitle = document.getElementById("modalTitle");
+					const modalContent = document.getElementById("modalContent");
+
+					modalTitle.textContent = `Incident on ${selectedItem.date}`;
+
+					let content = `
+                        <p><strong>Type:</strong> ${selectedItem.type}</p>
+                        <p><strong>Time:</strong> ${selectedItem.time}</p>
+                        <p><strong>Description:</strong> ${selectedItem.description}</p>
+                        <p><strong>Threat of Harm:</strong> ${selectedItem.threatOfHarm}</p>
+                        <p><strong>Reported to Police:</strong> ${selectedItem.reportedToPolice}</p>
+                    `;
+
+					// Add additional fields if they exist
+					if (selectedItem.phoneNumberContacted) {
+						content += `<p><strong>Phone Number Contacted:</strong> ${selectedItem.phoneNumberContacted}</p>`;
+					}
+					if (selectedItem.stalkersPhoneNumber) {
+						content += `<p><strong>Stalker"s Phone Number:</strong> ${selectedItem.stalkersPhoneNumber}</p>`;
+					}
+					if (selectedItem.emailSentTo) {
+						content += `<p><strong>Email Sent To:</strong> ${selectedItem.emailSentTo}</p>`;
+					}
+					if (selectedItem.stalkersEmailSentFrom) {
+						content += `<p><strong>Stalker"s Email:</strong> ${selectedItem.stalkersEmailSentFrom}</p>`;
+					}
+					if (selectedItem.address) {
+						content += `<p><strong>Address:</strong> ${selectedItem.address}</p>`;
+					}
+					if (selectedItem.nameOfOfficer) {
+						content += `<p><strong>Name of Officer:</strong> ${selectedItem.nameOfOfficer}</p>`;
+					}
+					if (selectedItem.whatWasDone) {
+						content += `<p><strong>What Was Done:</strong> ${selectedItem.whatWasDone}</p>`;
+					}
+
+					modalContent.innerHTML = content;
+					modal.style.display = "block";
+				}
+			}
+		});
+	</script>
 </body>
 </html>
